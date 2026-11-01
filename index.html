@@ -34,6 +34,8 @@
         <input type="radio" name="sport" id="s-tri" value="tri"><label for="s-tri">Triathlon</label>
         <input type="radio" name="sport" id="s-ultra" value="ultra"><label for="s-ultra">Ultra / Trail</label>
         <input type="radio" name="sport" id="s-team" value="team"><label for="s-team">Teamsport</label>
+        <input type="radio" name="sport" id="s-sprint" value="sprint"><label for="s-sprint">Sprint</label>
+        <input type="radio" name="sport" id="s-kraft" value="kraft"><label for="s-kraft">Krafttraining</label>
       </div>
     </div>
 
@@ -42,7 +44,7 @@
       <div class="field"><label for="dm">Minuten</label><input type="number" id="dm" min="0" max="59" step="5" value="0"></div>
     </div>
 
-    <div class="field">
+    <div class="field" id="zoneField">
       <span class="lbl">Intensität (überwiegend)</span>
       <div class="zones" role="radiogroup">
         <input type="radio" name="zone" id="z1" value="1"><label class="z1" for="z1"><b>Z1</b><span>Regeneration<br>&lt; 2 mmol/L</span></label>
@@ -51,6 +53,23 @@
         <input type="radio" name="zone" id="z4" value="4"><label class="z4" for="z4"><b>Z4</b><span>Schwelle<br>~80 % VO₂max</span></label>
         <input type="radio" name="zone" id="z5" value="5"><label class="z5" for="z5"><b>Z5</b><span>VO₂max / HIT<br>&gt; 4 mmol/L</span></label>
       </div>
+    </div>
+
+    <div class="field" id="sprintField" hidden>
+      <span class="lbl">Art des Sprinttrainings</span>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="sform" id="sf-max" value="max" checked><label for="sf-max">Maximalsprints, lange Pausen</label>
+        <input type="radio" name="sform" id="sf-rep" value="rep"><label for="sf-rep">Wiederholte Sprints, kurze Pausen</label>
+      </div>
+    </div>
+
+    <div class="field" id="kraftField" hidden>
+      <span class="lbl">Trainingsumfang</span>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="vol" id="v-norm" value="norm" checked><label for="v-norm">Normal</label>
+        <input type="radio" name="vol" id="v-high" value="high"><label for="v-high">Hoch (viele Sätze bis Ausbelastung)</label>
+      </div>
+      <label class="check"><input type="checkbox" id="fasted"> Nüchtern (≥ 8 h ohne Mahlzeit)</label>
     </div>
 
     <div class="field">
@@ -88,32 +107,6 @@
       </div>
     </div>
 
-    <details>
-      <summary>Verpflegungsplan & Produkte</summary>
-      <div class="inner">
-        <div class="row">
-          <div class="field"><label for="iv">Intervall (min)</label>
-            <select id="iv"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></div>
-          <div class="field"><label for="bph">Flaschen pro Stunde</label>
-            <select id="bph"><option value="0">0</option><option value="0.5">0,5</option><option value="1" selected>1</option><option value="1.5">1,5</option><option value="2">2</option></select></div>
-        </div>
-        <div class="row">
-          <div class="field"><label for="bc">KH pro Flasche (g)</label><input type="number" id="bc" min="0" max="200" step="5" value="60"></div>
-          <div class="field"><label for="gs">KH pro Gel (g)</label><input type="number" id="gs" min="10" max="100" step="1" value="30"></div>
-        </div>
-      </div>
-    </details>
-
-    <details>
-      <summary>Personalisierung (Labortest)</summary>
-      <div class="inner">
-        <div class="field">
-          <label for="ox">Gemessene maximale exogene Glukose-Oxidation (g/h)</label>
-          <input type="number" id="ox" min="0" max="120" step="1" placeholder="z. B. 45">
-          <span class="hint">Aus einem ¹³C-Glukose-Test (90 g/h, ≥ 2 h). Glukosedosis = Wert ÷ 0,8; Fruktose im Verhältnis 1 : 0,8 ergänzt (Podlogar et al. 2025).</span>
-        </div>
-      </div>
-    </details>
   </form>
 </section>
 
@@ -126,18 +119,9 @@
   <div class="pills" id="pills"></div>
   <dl class="stats">
     <div><dt>Gesamt</dt><dd id="total">–</dd></div>
-    <div><dt>Pro Portion</dt><dd id="perfeed">–</dd></div>
-    <div><dt>Portionen</dt><dd id="nfeed">–</dd></div>
+    <div><dt>Glukose/Malto</dt><dd id="glu">–</dd></div>
+    <div><dt>Fruktose</dt><dd id="fru">–</dd></div>
   </dl>
-  <div class="blend" id="blendbox">
-    <h3>Zusammensetzung pro Stunde</h3>
-    <div class="bar" aria-hidden="true"><i class="g" id="bg"></i><i class="f" id="bf"></i></div>
-    <div class="legend" id="legend"></div>
-  </div>
-  <h3>Produktmix pro Stunde</h3>
-  <div class="mix" id="mix"></div>
-  <h3>Zeitplan</h3>
-  <div class="feeds" id="feeds"></div>
   <h3>Hinweise</h3>
   <ul class="notes" id="notes"></ul>
   <div class="compare" id="compare"></div>
@@ -146,7 +130,7 @@
 
 <section class="panel model" aria-labelledby="m-h">
   <h2 id="m-h">Modell: Intensität × Dauer</h2>
-  <p class="hint" style="margin:-6px 0 12px">Bereiche in g/h nach Morton et al. 2026, Abb. 5. Markiert ist deine Einheit.</p>
+  <p class="hint" id="m-hint" style="margin:-6px 0 12px"></p>
   <div class="mtx-wrap"><table class="mtx" id="mtx"></table></div>
 </section>
 
@@ -156,7 +140,9 @@
     <li>Morton JP et al. From Metabolism to Medals. J Nutr 2026;156:101442. doi:10.1016/j.tjnut.2026.101442</li>
     <li>Thomas DT, Erdman KA, Burke LM. ACSM Joint Position Statement. Med Sci Sports Exerc 2016;48:543–568.</li>
     <li>Hearris MA et al. J Appl Physiol 2022 · Podlogar T et al. Eur J Appl Physiol 2022 (120 vs. 90 g/h).</li>
-    <li>O'Brien WJ et al. 2011/2013 (Fruktose-Glukose-Verhältnis 0,6–1,0) · Ijaz A et al. 2025 (Körpergröße) · Podlogar T et al. Perform Nutr 2025 (Personalisierung).</li>
+    <li>O'Brien WJ et al. 2011/2013 (Fruktose-Glukose-Verhältnis 0,6–1,0) · Ijaz A et al. 2025 (Körpergröße).</li>
+    <li>King A, Helms E, Zinn C, Jukic I. The Ergogenic Effects of Acute Carbohydrate Feeding on Resistance Exercise Performance. Sports Med 2022 (Krafttraining).</li>
+    <li>Systematische Übersicht und Meta-Analyse zu KH-Mundspülung und Sprintleistung (Sprint).</li>
     <li>Ravikanti S et al. J Appl Physiol 2025 (Marathon, 60/90/120 g/h) · Viribay A et al. Nutrients 2020 (Bergmarathon, Muskelschaden).</li>
   </ol>
 </div>
