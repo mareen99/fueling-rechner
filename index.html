@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fueling-Rechner</title>
+<meta name="description" content="Kohlenhydratzufuhr während des Trainings in g/h berechnen – basierend auf Morton et al., J Nutr 2026.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Fueling-Rechner</h1>
+  <p>Kohlenhydratzufuhr während der Belastung in g/h, abgeleitet aus dem Modell von Morton et al. (J Nutr 2026) und den darin zusammengefassten Studien zu exogener KH-Oxidation, Mischungsverhältnis, Format und Umgebung.</p>
+</header>
+
+<div class="grid">
+<section class="panel" aria-labelledby="in-h">
+  <h2 id="in-h">Einheit</h2>
+  <form id="f" onsubmit="return false">
+    <div class="field">
+      <span class="lbl">Sportart</span>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="sport" id="s-bike" value="bike" checked><label for="s-bike">Radfahren</label>
+        <input type="radio" name="sport" id="s-run" value="run"><label for="s-run">Laufen</label>
+        <input type="radio" name="sport" id="s-tri" value="tri"><label for="s-tri">Triathlon</label>
+        <input type="radio" name="sport" id="s-ultra" value="ultra"><label for="s-ultra">Ultra / Trail</label>
+        <input type="radio" name="sport" id="s-team" value="team"><label for="s-team">Teamsport</label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field"><label for="dh">Dauer – Stunden</label><input type="number" id="dh" min="0" max="48" step="1" value="3"></div>
+      <div class="field"><label for="dm">Minuten</label><input type="number" id="dm" min="0" max="59" step="5" value="0"></div>
+    </div>
+
+    <div class="field">
+      <span class="lbl">Intensität (überwiegend)</span>
+      <div class="zones" role="radiogroup">
+        <input type="radio" name="zone" id="z1" value="1"><label class="z1" for="z1"><b>Z1</b><span>Regeneration<br>&lt; 2 mmol/L</span></label>
+        <input type="radio" name="zone" id="z2" value="2" checked><label class="z2" for="z2"><b>Z2</b><span>Grundlage<br>moderat</span></label>
+        <input type="radio" name="zone" id="z3" value="3"><label class="z3" for="z3"><b>Z3</b><span>Tempo<br>schwer, 2–4 mmol/L</span></label>
+        <input type="radio" name="zone" id="z4" value="4"><label class="z4" for="z4"><b>Z4</b><span>Schwelle<br>~80 % VO₂max</span></label>
+        <input type="radio" name="zone" id="z5" value="5"><label class="z5" for="z5"><b>Z5</b><span>VO₂max / HIT<br>&gt; 4 mmol/L</span></label>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="lbl">Ziel der Einheit</span>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="goal" id="g-race" value="race"><label for="g-race">Wettkampf / Schlüsseleinheit</label>
+        <input type="radio" name="goal" id="g-train" value="train" checked><label for="g-train">Normales Training</label>
+        <input type="radio" name="goal" id="g-low" value="low"><label for="g-low">Train-low (Stoffwechselreiz)</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="gut">Bisher gut vertragene Menge</label>
+      <select id="gut">
+        <option value="60">Bis ~60 g/h (wenig Gut-Training)</option>
+        <option value="90" selected>Bis ~90 g/h</option>
+        <option value="120">Über 90 g/h, bis 120 g/h getestet</option>
+      </select>
+      <span class="hint">Deckelt die Empfehlung. Höhere Mengen werden schrittweise im Training aufgebaut.</span>
+    </div>
+
+    <div class="row">
+      <div class="field"><label for="mass">Körpergewicht (kg)</label><input type="number" id="mass" min="35" max="140" step="1" value="72"></div>
+      <div class="field"><label for="sex">Geschlecht</label>
+        <select id="sex"><option value="m">männlich</option><option value="f">weiblich</option></select></div>
+    </div>
+
+    <div class="field">
+      <span class="lbl">Bedingungen</span>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="env" id="e-norm" value="norm" checked><label for="e-norm">Gemäßigt</label>
+        <input type="radio" name="env" id="e-heat" value="heat"><label for="e-heat">Hitze</label>
+        <input type="radio" name="env" id="e-cold" value="cold"><label for="e-cold">Kälte / Regen</label>
+        <input type="radio" name="env" id="e-alt" value="alt"><label for="e-alt">Höhe &gt; 2500 m</label>
+      </div>
+    </div>
+
+    <details>
+      <summary>Verpflegungsplan & Produkte</summary>
+      <div class="inner">
+        <div class="row">
+          <div class="field"><label for="iv">Intervall (min)</label>
+            <select id="iv"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></div>
+          <div class="field"><label for="bph">Flaschen pro Stunde</label>
+            <select id="bph"><option value="0">0</option><option value="0.5">0,5</option><option value="1" selected>1</option><option value="1.5">1,5</option><option value="2">2</option></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="bc">KH pro Flasche (g)</label><input type="number" id="bc" min="0" max="200" step="5" value="60"></div>
+          <div class="field"><label for="gs">KH pro Gel (g)</label><input type="number" id="gs" min="10" max="100" step="1" value="30"></div>
+        </div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Personalisierung (Labortest)</summary>
+      <div class="inner">
+        <div class="field">
+          <label for="ox">Gemessene maximale exogene Glukose-Oxidation (g/h)</label>
+          <input type="number" id="ox" min="0" max="120" step="1" placeholder="z. B. 45">
+          <span class="hint">Aus einem ¹³C-Glukose-Test (90 g/h, ≥ 2 h). Glukosedosis = Wert ÷ 0,8; Fruktose im Verhältnis 1 : 0,8 ergänzt (Podlogar et al. 2025).</span>
+        </div>
+      </div>
+    </details>
+  </form>
+</section>
+
+<section class="panel result" aria-live="polite" aria-labelledby="out-h">
+  <h2 id="out-h">Empfehlung</h2>
+  <div class="hero">
+    <div class="big" id="target">90<small>g/h</small></div>
+    <div class="range" id="range"></div>
+  </div>
+  <div class="pills" id="pills"></div>
+  <dl class="stats">
+    <div><dt>Gesamt</dt><dd id="total">–</dd></div>
+    <div><dt>Pro Portion</dt><dd id="perfeed">–</dd></div>
+    <div><dt>Portionen</dt><dd id="nfeed">–</dd></div>
+  </dl>
+  <div class="blend" id="blendbox">
+    <h3>Zusammensetzung pro Stunde</h3>
+    <div class="bar" aria-hidden="true"><i class="g" id="bg"></i><i class="f" id="bf"></i></div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <h3>Produktmix pro Stunde</h3>
+  <div class="mix" id="mix"></div>
+  <h3>Zeitplan</h3>
+  <div class="feeds" id="feeds"></div>
+  <h3>Hinweise</h3>
+  <ul class="notes" id="notes"></ul>
+  <div class="compare" id="compare"></div>
+</section>
+</div>
+
+<section class="panel model" aria-labelledby="m-h">
+  <h2 id="m-h">Modell: Intensität × Dauer</h2>
+  <p class="hint" style="margin:-6px 0 12px">Bereiche in g/h nach Morton et al. 2026, Abb. 5. Markiert ist deine Einheit.</p>
+  <div class="mtx-wrap"><table class="mtx" id="mtx"></table></div>
+</section>
+
+<div class="foot">
+  <p>Kein medizinischer Rat. Die absoluten Oxidationsraten im Modell stammen fast ausschließlich aus Studien mit Männern; für Frauen fehlen vergleichbare Daten. Zufuhren über 120 g/h sind wissenschaftlich bisher nicht belegt. Neue Mengen und Produkte immer zuerst im Training testen.</p>
+  <ol>
+    <li>Morton JP et al. From Metabolism to Medals. J Nutr 2026;156:101442. doi:10.1016/j.tjnut.2026.101442</li>
+    <li>Thomas DT, Erdman KA, Burke LM. ACSM Joint Position Statement. Med Sci Sports Exerc 2016;48:543–568.</li>
+    <li>Hearris MA et al. J Appl Physiol 2022 · Podlogar T et al. Eur J Appl Physiol 2022 (120 vs. 90 g/h).</li>
+    <li>O'Brien WJ et al. 2011/2013 (Fruktose-Glukose-Verhältnis 0,6–1,0) · Ijaz A et al. 2025 (Körpergröße) · Podlogar T et al. Perform Nutr 2025 (Personalisierung).</li>
+    <li>Ravikanti S et al. J Appl Physiol 2025 (Marathon, 60/90/120 g/h) · Viribay A et al. Nutrients 2020 (Bergmarathon, Muskelschaden).</li>
+  </ol>
+</div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
